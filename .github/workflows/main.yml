@@ -1,0 +1,46 @@
+name: Desi Rush V1 Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Unity project ZIP
+        run: |
+          mkdir -p unity_project
+          unzip -o DesiRush_V1_Final_Release_Package.zip -d unity_project
+
+      - name: Find Unity project
+        run: |
+          PROJECT_PATH=$(find unity_project -type d -name Assets -print -quit | xargs dirname)
+          echo "PROJECT_PATH=$PROJECT_PATH" >> $GITHUB_ENV
+          echo "Unity project: $PROJECT_PATH"
+
+      - name: Build Android APK
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          targetPlatform: Android
+          DesiRush_V1_Unity_Project_Generated(1).zip
+          androidExportType: androidPackage
+          androidKeystoreName: user.keystore
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName: user
+          androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DesiRush-V1-APK
+          path: |
+            **/*.apk
