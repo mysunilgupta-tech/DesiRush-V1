@@ -1,39 +1,29 @@
 name: Desi Rush V1 Android APK
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   buildAndroid:
-    name: Build Android APK 🏗️
+    name: Build Android APK
     runs-on: ubuntu-latest
-    
     steps:
-      # 1. Code checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0
 
-      # 2. Aapka zip file unzip karna
-      - name: Unzip Unity Project
-        run: |
-          unzip -o DesiRush_V1_Final_Release_Package.zip
-          ls -la
-
-      # 3. Cache Library folder - build fast hoga
       - name: Cache Library
         uses: actions/cache@v4
         with:
           path: Library
-          key: Library-Android
+          key: Library-DesiRush-V1-Android
           restore-keys: |
             Library-
 
-      # 4. Unity Builder se APK Build
-      - name: Build Android APK
+      # Ye 2 line sabse important hai dirty error fix ke liye
+      - name: Build Unity Project
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -41,13 +31,13 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: Android
-          unityVersion: 2022.3.20f1
-          # Agar aapka project zip ke andar kisi folder me hai to uska naam yahan likho
-          # projectPath: DesiRush_V1_Final_Release_Package
+          allowDirtyBranch: true
+          versioning: None
+          customVersion: 1.0.0
+          androidVersionCode: 1
 
-      # 5. APK ko Artifact me upload karo
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: DesiRush-V1-APK
-          path: build/Android
+          path: build/Android/*.apk
