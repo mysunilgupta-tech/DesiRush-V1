@@ -1,33 +1,53 @@
 name: Desi Rush V1 Android APK
+
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
+
 jobs:
-  build:
+  buildAndroid:
+    name: Build Android APK 🏗️
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
+      # 1. Code checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           lfs: true
-      - name: Unzip
+
+      # 2. Aapka zip file unzip karna
+      - name: Unzip Unity Project
         run: |
-          unzip -o DesiRush_V1_Final_Release_Package.zip -d DesiRush
-          ls -lh DesiRush
-      - name: Free Space
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
-          df -h
-      - name: Build APK
+          unzip -o DesiRush_V1_Final_Release_Package.zip
+          ls -la
+
+      # 3. Cache Library folder - build fast hoga
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Android
+          restore-keys: |
+            Library-
+
+      # 4. Unity Builder se APK Build
+      - name: Build Android APK
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: DesiRush
           targetPlatform: Android
-          unityVersion: 2022.3.62f1
-          versioning: None
-      - uses: actions/upload-artifact@v4
+          unityVersion: 2022.3.20f1
+          # Agar aapka project zip ke andar kisi folder me hai to uska naam yahan likho
+          # projectPath: DesiRush_V1_Final_Release_Package
+
+      # 5. APK ko Artifact me upload karo
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          name: DesiRush-APK
+          name: DesiRush-V1-APK
           path: build/Android
