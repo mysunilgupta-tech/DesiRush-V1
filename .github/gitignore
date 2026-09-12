@@ -1,0 +1,8 @@
+Library/
+Temp/
+Obj/
+Logs/
+MemoryCaptures/
+build/
+*.tmp
+*.log
