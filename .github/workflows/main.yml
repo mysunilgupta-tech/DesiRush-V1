@@ -1,7 +1,5 @@
 name: Build Android APK
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -11,31 +9,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-          fetch-depth: 0
-
-      - uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-Android-6000
-          restore-keys: Library-
-
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          docker system prune -af
 
       - name: Build APK
         uses: game-ci/unity-builder@v4
         env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: 6000.0.50f1
           targetPlatform: Android
           buildName: DesiRush
-          androidAppBundle: false
 
       - uses: actions/upload-artifact@v4
         with:
           name: DesiRush-APK
-          path: build/Android/*.apk
+          path: build/Android
