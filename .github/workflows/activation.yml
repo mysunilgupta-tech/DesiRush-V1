@@ -11,4 +11,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Manual Activation File
-          path: ${{ steps.getManualLicenseFlile.outputs.filePath }}
+          
+steps.getManualLicenseFile.outputs.filePath
