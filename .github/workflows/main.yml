@@ -1,38 +1,41 @@
-
 name: Build Android APK
-
 on:
-  workflow_dispatch:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  buildAndroid:
-    name: Build APK
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0
 
-      - name: Cache Library
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: Library
-          key: Library-Android
+          key: Library-Android-6000
+          restore-keys: Library-
 
-      - name: Build with Unity
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          docker system prune -af
+
+      - name: Build APK
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
+          unityVersion: 6000.0.50f1
           targetPlatform: Android
+          buildName: DesiRush
+          androidAppBundle: false
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: DesiRush-APK
-          path: build/Android
+          path: build/Android/*.apk
