@@ -1,0 +1,16 @@
+name: Get Unity ALF File
+on: workflow_dispatch
+jobs:
+  getalf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate ALF
+        run: |
+          docker run --rm -v $PWD:/workspace -w /workspace unityci/editor:ubuntu-6000.0.50f1-base-3 /opt/unity/Editor/Unity -batchmode -createManualActivationFile -logfile || true
+          ls -la
+          find . -name "*.alf"
+      - name: Upload ALF Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity-ALF-File
+          path: "**/*.alf"
