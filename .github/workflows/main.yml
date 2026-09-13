@@ -13,7 +13,6 @@ jobs:
         run: |
           unzip -o -q DesiRush_V1_Final_Release_Package.zip
           ls -la
-          rm -f DesiRush_V1_Final_Release_Package.zip
 
       - name: Build APK
         uses: game-ci/unity-builder@v4
@@ -25,6 +24,7 @@ jobs:
           unityVersion: 6000.0.50f1
           targetPlatform: Android
           buildName: DesiRush
+          versioning: None
 
       - uses: actions/upload-artifact@v4
         with:
