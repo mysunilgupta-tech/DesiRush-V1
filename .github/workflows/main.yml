@@ -11,8 +11,9 @@ jobs:
 
       - name: Unzip Unity Project
         run: |
-          unzip -q DesiRush_V1_Final_Release_Package.zip
+          unzip -o -q DesiRush_V1_Final_Release_Package.zip
           ls -la
+          rm -f DesiRush_V1_Final_Release_Package.zip
 
       - name: Build APK
         uses: game-ci/unity-builder@v4
