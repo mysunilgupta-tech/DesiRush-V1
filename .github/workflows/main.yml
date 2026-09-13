@@ -1,7 +1,7 @@
+
 name: Build Android APK
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,6 +10,11 @@ jobs:
         with:
           lfs: true
 
+      - name: Unzip Unity Project
+        run: |
+          unzip -q DesiRush_V1_Final_Release_Package.zip
+          ls -la
+
       - name: Build APK
         uses: game-ci/unity-builder@v4
         env:
@@ -17,6 +22,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
+          projectPath: .
           unityVersion: 6000.0.50f1
           targetPlatform: Android
           buildName: DesiRush
