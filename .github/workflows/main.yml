@@ -1,58 +1,25 @@
 name: Build Android APK
-
-on:
-  workflow_dispatch:
-
+on: workflow_dispatch
 jobs:
-  build:
+  buildAndroid:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Unzip Unity Project
-        run: |
-          if [ -f "DesiRush_V1_Final_Release_Package.zip" ]; then
-            unzip -o -q DesiRush_V1_Final_Release_Package.zip
-          fi
-          ls -la
-
-      - name: Free Disk Space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: Activate Unity License
-        uses: buildalon/activate-unity-license@v1
+      - uses: actions/cache@v4
         with:
-          license: Personal
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-
-      - name: Build Android APK
+          path: Library
+          key: Library-Android
+      - name: Build APK
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: .
-          unityVersion: 6000.0.50f1
           targetPlatform: Android
+          unityVersion: 2022.3.62f1
           buildName: DesiRush
-          androidVersionCode: 1
-          androidAppBundle: false
-          buildsPath: build
-          versioning: None
-          allowDirtyBranch: true
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: DesiRush-APK
           path: build/Android
